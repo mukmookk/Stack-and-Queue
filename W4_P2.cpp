@@ -33,97 +33,71 @@ public:
     ~Stack();               // destructor
     void push(int x);       // push to top
     int pop();              // pop from top
-    int peek();             // return element from top
     int isEmpty();          // concern is Stack empty
-    int isFull();           // concern is Stack full
-    int stackTop();
+    int stackTop();         // return top
 };
- 
-Stack::Stack() {
+
+/* constructor */
+Stack::Stack() {    
     top = nullptr; // top이 포인터가 아무것도 가리키지 않는 경우 Stack은 비게 된다
 }
- 
+
+/* destructor */
 Stack::~Stack()
 {
-    Node* p = top; //
+    Node* p = top;
     while (top)
     {
-        top = top->next;
-        delete p;
-        p = top;
-    }
+        top = top->next;                        // 이후의 Node를 가리키게 하고
+        delete p;                               // 해당 노드 삭제
+        p = top;                                // 현재의 top값은 다시 p에 저장
+    }                                           // 순회하며 모든 노드 파괴
 }
  
-void Stack::push(int x) {
-    Node* t = new Node;
-    if (t == nullptr)
+void Stack::push(int x) 
+{
+    Node* t = new Node;                         // New node
+    if (t == nullptr)                           // t가 할당에 실패할 경우
     {
         cout << "Stack Overflow" << endl;
     }
-    else
+    else                                        // 정상적으로 할당이 가능한 경우
     {
-        t->data = x;
-        t->next = top;
-        top = t;
+        t->data = x;                            // 해당 노드에 데이터 대입
+        t->next = top;                          // 현재 top을 새로 생성한 노드의 뒤로 미루고
+        top = t;                                // t를 top으로 할당
     }
 }
  
-int Stack::pop() {
-    Node* p;
-    int x = -1;
-    if (top == nullptr){
+int Stack::pop() 
+{
+    Node* p;                                   
+    int x = -1;                                 // 제거되는 노드의 데이터
+    if (top == nullptr)                         // stack이 빈 경우
+    {
         cout << "Stack Underflow" << endl;
-    } else {
-        p = top;
-        x = p->data;
-        top = top->next;
-        delete p;
+    } 
+    else
+    {
+        p = top;                                // top을 p에 미리 빼두고
+        x = p->data;                                                      
+        top = top->next;                        // top을 밀고 
+        delete p;                               // top을 제거
     }
     return x;
 }
  
-int Stack::isFull() {
-    Node* t = new Node;
-    int r = t ? 1 : 0;
-    delete t;
-    return r;
-}
- 
-int Stack::isEmpty() {
-    return top ? 0 : 1;
+int Stack::isEmpty() 
+{
+    return top ? 0 : 1;                         // return true if top equals NULL
 }
  
 int Stack::stackTop() {
-    if (top){
+    if (top)
+    {
         return top->data;
     }
     return -1;
-}
- 
-int Stack::peek()
-{
-    if (isEmpty())
-    {
-        return -1;
-    }
-    else
-    {
-        Node* p = top;
- 
-        for (int i=0; p != nullptr; i++)
-        {
-            p = p->next;
-        }
- 
-        if (p != nullptr)
-        {
-            return p->data;
-        }
-        else
-        {
-            return -1;
-        }
-    }
 }
  
  
@@ -149,26 +123,26 @@ int operation(char op, int x, int y)
 }
  
 int Evaluate(char* postfix){
-    Stack stk;
+    Stack stk;                                
     int x;
     int y;
     int result;
-    for (int i=0; postfix[i]!='\0'; i++)
+    for (int i=0; postfix[i]!='\0'; i++)            // postfix를 순회
     {
-        if (!isOperand(postfix[i]))
+        if (!isOperand(postfix[i]))                 // 숫자인 경우
         {
-            stk.push(postfix[i]-'0');
+            stk.push(postfix[i]-'0');               // atoi를 통해 stack에 저장 
         }
         else
         {
-            y = stk.pop();
+            y = stk.pop();                          // 아닌 경우 맨 위의 두 element를 뽑아서
             x = stk.pop();
-            result = operation(postfix[i], x, y);
-            stk.push(result);
+            result = operation(postfix[i], x, y);   // 계산 수행
+            stk.push(result);                       // 계산 결과는 이후 연산에서 재활용
         }
     }
-    result = stk.pop();
-    return result;
+    result = stk.pop();                             // 최종적으로 남은 하나의 숫자 대입
+    return result;                                  // 리턴
 }
  
 int main() {
